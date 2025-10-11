@@ -70,7 +70,7 @@ def gemini_chart_plan(df, api_key):
         """
 
         response = requests.post(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
             headers={"Content-Type": "application/json"},
             params={"key": api_key},
             json={"contents": [{"parts": [{"text": prompt}]}]},
