@@ -17,7 +17,7 @@ st.markdown("Upload your Excel or CSV file and generate a data dashboard instant
 # Sidebar options
 st.sidebar.header("Options")
 use_gemini = st.sidebar.checkbox("Use Gemini LLM (if API key available)", value=False)
-GEMINI_API_KEY = ""  # 👉 Paste your Gemini API key here if available (optional)
+GEMINI_API_KEY = "AIzaSyCo7K_-BVQSDgTEt5pRk7zL5zPot-DFoxk"  # 👉 Paste your Gemini API key here if available (optional)
 max_charts = st.sidebar.slider("Number of charts to generate", 1, 10, 5)
 
 # File uploader
