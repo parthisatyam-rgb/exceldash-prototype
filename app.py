@@ -76,13 +76,30 @@ def gemini_chart_plan(df, api_key):
             json={"contents": [{"parts": [{"text": prompt}]}]},
             timeout=30
         )
-        data = response.json()
+      data = response.json()
+
+# Handle multiple possible Gemini API formats
+text = ""
+try:
+    # Newer Gemini response style
+    if "output" in data:
+        text = data["output"][0]["content"]
+    elif "candidates" in data:
         text = data["candidates"][0]["content"]["parts"][0]["text"]
-        # Try to safely parse JSON-like output
-        import json, re
-        text = re.sub(r"```json|```", "", text)
-        charts = json.loads(text)
-        return charts
+    elif "contents" in data:
+        # fallback if the text is nested in 'contents'
+        parts = data["contents"][0].get("parts", [])
+        if parts and "text" in parts[0]:
+            text = parts[0]["text"]
+except Exception as e:
+    raise Exception(f"Unexpected response structure: {data}") from e
+
+# Try to parse JSON-like content
+import json, re
+text = re.sub(r"```json|```", "", text)
+charts = json.loads(text)
+return charts
+
     except Exception as e:
         st.warning(f"Gemini plan failed, fallback to heuristic. Error: {e}")
         return heuristic_chart_plan(df)
