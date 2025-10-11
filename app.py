@@ -57,74 +57,41 @@ def heuristic_chart_plan(df):
     return charts[:max_charts]
 
 def gemini_chart_plan(df, api_key):
+    """Generate chart suggestions using Gemini API."""
+    import json
+
+    url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent"
+    headers = {"Content-Type": "application/json"}
+
+    prompt = f"""
+    You are a data visualization assistant.
+    Based on this dataset with columns: {list(df.columns)},
+    suggest up to 5 useful charts in JSON format.
+    Use this format:
+    [
+      {{"type": "bar", "x": "column_name", "y": "column_name", "title": "Chart title"}},
+      ...
+    ]
     """
-    Call Gemini LLM to suggest chart types and fields.
-    """
+
+    payload = {
+        "contents": [{"parts": [{"text": prompt}]}]
+    }
+
     try:
-        import requests, json, re
+        response = requests.post(f"{url}?key={api_key}", headers=headers, json=payload)
+        result = response.json()
 
-        # Use a small sample for free-tier Gemini
-        data_sample = df.head(5).to_csv(index=False)
-
-        prompt = f"""
-        You are a data visualization assistant.
-        Analyze the dataset sample below and return a JSON list of chart suggestions.
-        Each suggestion should include: chart type (bar, line, pie, scatter), x column, y column, and title.
-
-        Example:
-        [
-          {{"type": "bar", "x": "Category", "y": "Sales", "title": "Sales by Category"}}
-        ]
-
-        Dataset sample:
-        {data_sample}
-        """
-
-url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent"
-
-        "
-        response = requests.post(
-            url,
-            headers={"Content-Type": "application/json"},
-            params={"key": api_key},
-            json={
-                "contents": [
-                    {
-                        "role": "user",
-                        "parts": [{"text": prompt}]
-                    }
-                ]
-            },
-            timeout=30
-        )
-
-        # Debug log for development
-        st.write("Raw Gemini response:", response.text)
-
-        if not response.text.strip():
-            raise Exception("Empty response from Gemini API")
-
-        data = response.json()
-
-        # Extract text safely
-        text = ""
-        if "candidates" in data:
-            text = data["candidates"][0]["content"]["parts"][0]["text"]
-        elif "output" in data:
-            text = data["output"][0]["content"]
-        elif "contents" in data:
-            parts = data["contents"][0].get("parts", [])
-            if parts and "text" in parts[0]:
-                text = parts[0]["text"]
-
-        text = re.sub(r"```json|```", "", text)
-        charts = json.loads(text)
-        return charts
+        if "candidates" in result:
+            text = result["candidates"][0]["content"]["parts"][0]["text"]
+            return json.loads(text)
+        else:
+            st.warning(f"Gemini plan failed, fallback to heuristic. Raw response: {result}")
+            return heuristic_chart_plan(df)
 
     except Exception as e:
         st.warning(f"Gemini plan failed, fallback to heuristic. Error: {e}")
         return heuristic_chart_plan(df)
-
 
 def generate_dashboard(df, chart_plan):
     """
