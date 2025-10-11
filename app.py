@@ -169,7 +169,7 @@ if uploaded_file:
 
     if st.button("🚀 Generate Dashboard"):
         with st.spinner("Analyzing and generating dashboard..."):
-            if use_gemini and GEMINI_API_KEY:
+          if use_gemini and api_key:
                 chart_plan = gemini_chart_plan(df, GEMINI_API_KEY)
             else:
                 chart_plan = heuristic_chart_plan(df)
