@@ -80,7 +80,8 @@ def gemini_chart_plan(df, api_key):
         {data_sample}
         """
 
-        url = "url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent"
+url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent"
+
         "
         response = requests.post(
             url,
