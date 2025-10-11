@@ -168,28 +168,29 @@ if uploaded_file:
     st.dataframe(df.head())
 
     if st.button("🚀 Generate Dashboard"):
-with st.spinner("Generating dashboard..."):
-    if use_gemini and api_key:
-        charts = gemini_chart_plan(df, api_key)
-    else:
-        charts = heuristic_chart_plan(df)
+        with st.spinner("Generating dashboard..."):
+            if use_gemini and api_key:
+                charts = gemini_chart_plan(df, api_key)
+            else:
+                charts = heuristic_chart_plan(df)
 
-    # Render the charts
-    for chart in charts[:max_charts]:
-        st.subheader(chart["title"])
-        fig = None
-        if chart["type"] == "bar":
-            fig = px.bar(df, x=chart["x"], y=chart["y"], title=chart["title"])
-        elif chart["type"] == "line":
-            fig = px.line(df, x=chart["x"], y=chart["y"], title=chart["title"])
-        elif chart["type"] == "pie":
-            fig = px.pie(df, names=chart["x"], values=chart["y"], title=chart["title"])
-        elif chart["type"] == "scatter":
-            fig = px.scatter(df, x=chart["x"], y=chart["y"], title=chart["title"])
+            # Render the charts
+            for chart in charts[:max_charts]:
+                st.subheader(chart["title"])
+                fig = None
+                if chart["type"] == "bar":
+                    fig = px.bar(df, x=chart["x"], y=chart["y"], title=chart["title"])
+                elif chart["type"] == "line":
+                    fig = px.line(df, x=chart["x"], y=chart["y"], title=chart["title"])
+                elif chart["type"] == "pie":
+                    fig = px.pie(df, names=chart["x"], values=chart["y"], title=chart["title"])
+                elif chart["type"] == "scatter":
+                    fig = px.scatter(df, x=chart["x"], y=chart["y"], title=chart["title"])
 
-        if fig:
-            st.plotly_chart(fig, use_container_width=True)
+                if fig:
+                    st.plotly_chart(fig, use_container_width=True)
 
             st.markdown(export_dashboard(charts), unsafe_allow_html=True)
+
 else:
     st.info("👆 Upload an Excel or CSV file to begin.")
