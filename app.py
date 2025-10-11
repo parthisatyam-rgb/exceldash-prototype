@@ -4,6 +4,7 @@ import plotly.express as px
 import io
 import base64
 import requests
+import os  # ✅ Added to load environment variables
 
 # ===========================
 # ExcelDash Prototype
@@ -17,7 +18,13 @@ st.markdown("Upload your Excel or CSV file and generate a data dashboard instant
 # Sidebar options
 st.sidebar.header("Options")
 use_gemini = st.sidebar.checkbox("Use Gemini LLM (if API key available)", value=False)
-GEMINI_API_KEY = ""  # 👉 Paste your Gemini API key here if available (optional)
+
+# ✅ Securely load API key from Streamlit Secrets
+api_key = os.getenv("GEMINI_API_KEY")
+
+# If not found in secrets, you can still test manually by pasting temporarily:
+# api_key = "AIzaYourKey"  # ⚠️ Remove this before committing
+
 max_charts = st.sidebar.slider("Number of charts to generate", 1, 10, 5)
 
 # File uploader
