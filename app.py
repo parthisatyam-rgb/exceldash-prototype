@@ -55,22 +55,21 @@ def gemini_chart_plan(df, api_key):
     """
     try:
         data_sample = df.head(10).to_csv(index=False)
-        prompt = f"""
-        You are a data visualization assistant.
-        Analyze the dataset sample below and return a JSON list of chart suggestions.
-        Each suggestion should include: chart type (bar, line, pie, scatter), x column, y column, and title.
+       prompt = f"""
+You are a data visualization assistant.
+Analyze the dataset sample below and return a JSON list of chart suggestions.
+Each suggestion should include: chart type (bar, line, pie, scatter), x column, y column, and title.
 
-        Example:
-        [
-          {{"type": "bar", "x": "Category", "y": "Sales", "title": "Sales by Category"}}
-        ]
+Example:
+[
+  {{"type": "bar", "x": "Category", "y": "Sales", "title": "Sales by Category"}}
+]
 
-        Dataset sample:
-        {data_sample}
-        """
-
-        response = requests.post(
+Dataset sample:
+{data_sample}
+"""
 url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+
             headers={"Content-Type": "application/json"},
             params={"key": api_key},
             json={"contents": [{"parts": [{"text": prompt}]}]},
