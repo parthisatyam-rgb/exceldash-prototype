@@ -168,11 +168,11 @@ if uploaded_file:
     st.dataframe(df.head())
 
     if st.button("🚀 Generate Dashboard"):
-        with st.spinner("Analyzing and generating dashboard..."):
-if use_gemini and api_key:
-    charts = gemini_chart_plan(df, api_key)
-else:
-    charts = heuristic_chart_plan(df)
+        with st.spinner("Generating dashboard..."):
+    if use_gemini and api_key:
+        charts = gemini_chart_plan(df, api_key)
+    else:
+        charts = heuristic_chart_plan(df)
 
             charts = generate_dashboard(df, chart_plan)
             for fig in charts:
